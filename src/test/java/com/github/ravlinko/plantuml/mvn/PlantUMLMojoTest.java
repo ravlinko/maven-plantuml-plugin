@@ -2,7 +2,6 @@ package com.github.ravlinko.plantuml.mvn;
 
 
 import org.apache.maven.plugin.testing.MojoRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -14,16 +13,13 @@ import static org.junit.Assert.assertTrue;
 public class PlantUMLMojoTest {
 
     @Rule
-    public MojoRule rule = new MojoRule()
-    {
+    public MojoRule rule = new MojoRule() {
         @Override
-        protected void before() throws Throwable
-        {
+        protected void before() throws Throwable {
         }
 
         @Override
-        protected void after()
-        {
+        protected void after() {
         }
     };
 
