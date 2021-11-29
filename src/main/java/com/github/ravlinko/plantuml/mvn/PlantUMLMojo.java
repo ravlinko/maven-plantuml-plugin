@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-@Mojo(name="plantuml")
+@Mojo(name="build")
 public class PlantUMLMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         getLog().info( "Hello, world." );
