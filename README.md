@@ -19,6 +19,9 @@ Apache Maven PlantUML plugin to convert diagrams as a code to images.
 
 ```shell
 ./mvnw com.github.ravlinko:plantuml-maven-plugin:plantuml
+
+# Short version
+./mvnw plantuml:plantuml
 ```
 
 ### Dependency upgrade list

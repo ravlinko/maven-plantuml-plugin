@@ -26,6 +26,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.version>3.8.4</maven.version>
         <slf4j.version>1.7.32</slf4j.version>
+        <plantuml.version>8059</plantuml.version>
     </properties>
 
     <dependencies>
@@ -65,6 +66,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>${plantuml.version}</version>
         </dependency>
 
         <dependency>
