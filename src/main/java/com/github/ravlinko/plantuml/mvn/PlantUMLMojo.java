@@ -1,6 +1,11 @@
 package com.github.ravlinko.plantuml.mvn;
 
-import net.sourceforge.plantuml.*;
+import net.sourceforge.plantuml.FileFormat;
+import net.sourceforge.plantuml.FileFormatOption;
+import net.sourceforge.plantuml.GeneratedImage;
+import net.sourceforge.plantuml.Option;
+import net.sourceforge.plantuml.OptionFlags;
+import net.sourceforge.plantuml.SourceFileReader;
 import net.sourceforge.plantuml.preproc.Defines;
 import org.apache.maven.model.FileSet;
 import org.apache.maven.plugin.AbstractMojo;
@@ -10,8 +15,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Mojo(name = "build")
 public class PlantUMLMojo extends AbstractMojo {
@@ -19,20 +26,18 @@ public class PlantUMLMojo extends AbstractMojo {
 
     /**
      * Fileset to search plantuml diagrams in.
-     *
-     * @parameter property="plantuml.sourceFiles" default-value="${basedir}/src/main/plantuml&#47;**&#47;*.puml"
-     * @required
+     * <p>
+     * default-value="${basedir}/src/main/plantuml&#47;**&#47;*.puml"
      */
-    @Parameter(property = "plantuml.sourceFiles")
+    @Parameter(property = "plantuml.sourceFiles", required = true)
     private FileSet sourceFiles;
 
     /**
      * Directory where images are generated.
-     *
-     * @parameter property="plantuml.outputDirectory" default-value="${basedir}/target/plantuml"
-     * @required
+     * <p>
+     * default-value="${basedir}/target/plantuml"
      */
-    @Parameter(property = "plantuml.outputDirectory")
+    @Parameter(property = "plantuml.outputDirectory", required = true)
     private File outputDirectory;
 
     /**
@@ -42,24 +47,18 @@ public class PlantUMLMojo extends AbstractMojo {
      * <a href="http://plantuml.sourceforge.net/javadoc.html">http://plantuml.sourceforge.net/javadoc.html</a>.
      * <p>
      * If this is set to true then outputDirectory is ignored.
-     *
-     * @parameter property="plantuml.outputInSourceDirectory" default-value="false"
      */
     @Parameter(property = "plantuml.outputInSourceDirectory", defaultValue = "false")
     private boolean outputInSourceDirectory;
 
     /**
      * Charset used during generation.
-     *
-     * @parameter property="plantuml.charset"
      */
     @Parameter(property = "plantuml.charset")
     private String charset;
 
     /**
      * External configuration file location.
-     *
-     * @parameter property="plantuml.config"
      */
     @Parameter(property = "plantuml.config")
     private String config;
@@ -68,149 +67,171 @@ public class PlantUMLMojo extends AbstractMojo {
      * Specify output format.
      *
      * @enum {net.sourceforge.plantuml.FileFormat}
-     * @parameter property="plantuml.format"
      */
     @Parameter(property = "plantuml.format", defaultValue = "PNG")
     private FileFormat format;
 
     /**
      * Fully qualified path to Graphviz home directory.
-     *
-     * @parameter property="plantuml.graphvizDot"
      */
     @Parameter(property = "plantuml.graphvizDot")
     private String graphvizDot;
 
     /**
      * Wether or not to output details during generation.
-     *
-     * @parameter property="plantuml.verbose" default-value="false"
      */
     @Parameter(property = "plantuml.verbose", defaultValue = "false")
     private boolean verbose;
 
     /**
      * Specify to include metadata in the output files.
-     *
-     * @parameter property="plantuml.withMetadata"
      */
     @Parameter(property = "plantuml.withMetadata", defaultValue = "false")
     private boolean withMetadata;
 
     /**
      * Specify to overwrite any output file, also if the target file is newer as the input file.
-     *
-     * @parameter property="plantuml.overwrite"
      */
     @Parameter(property = "plantuml.overwrite", defaultValue = "false")
     private boolean overwrite;
 
-    public void execute() throws MojoExecutionException {
-        final String invalidSourceFilesDirectoryWarnMsg = this.sourceFiles.getDirectory() + " is not a valid path";
-        if (null == this.sourceFiles.getDirectory() || this.sourceFiles.getDirectory().isEmpty()) {
-            getLog().warn(invalidSourceFilesDirectoryWarnMsg);
-            return;
+    private void validateSourceDirectory(FileSet sourceFiles) throws IsNotValidPathException {
+        if (Objects.isNull(sourceFiles.getDirectory()) || sourceFiles.getDirectory().isEmpty()) {
+            getLog().warn("Source files directory is not valid");
+            throw new IsNotValidPathException(sourceFiles.getDirectory());
         }
-        File baseDir = null;
+    }
+
+    private File getDirectory(String path) {
+        File directory = null;
         try {
-            baseDir = new File(this.sourceFiles.getDirectory());
+            directory = new File(path);
         } catch (Exception e) {
-            getLog().debug(invalidSourceFilesDirectoryWarnMsg, e);
+            getLog().debug(e);
         }
-        if (null == baseDir || !baseDir.exists() || !baseDir.isDirectory()) {
-            getLog().warn(invalidSourceFilesDirectoryWarnMsg);
-            return;
+        if (isExistedDirectory(directory)) {
+            return directory;
+        } else {
+            getLog().warn("Source files directory is not valid");
+            throw new IsNotValidPathException(sourceFiles.getDirectory());
         }
-        if (!this.outputInSourceDirectory) {
-            if (!this.outputDirectory.exists()) {
-                // If output directoy does not exist yet create it.
-                this.outputDirectory.mkdirs();
-            }
-            if (!this.outputDirectory.isDirectory()) {
-                throw new IllegalArgumentException("<" + this.outputDirectory + "> is not a valid directory.");
-            }
+    }
+
+    private boolean isExistedDirectory(File directory) {
+        return Objects.nonNull(directory) && directory.exists() && directory.isDirectory();
+    }
+
+    private void populateOption() throws IOException {
+        if (!outputInSourceDirectory) {
+            option.setOutputDir(outputDirectory);
         }
+        if (Objects.nonNull(charset)) {
+            option.setCharset(charset);
+        }
+        if (Objects.nonNull(config)) {
+            option.initConfig(config);
+        }
+        if (Objects.nonNull(graphvizDot)) {
+            OptionFlags.getInstance().setDotExecutable(graphvizDot);
+        }
+        if (Objects.nonNull(format)) {
+            option.setFileFormat(format);
+        }
+        OptionFlags.getInstance().setVerbose(verbose);
+    }
+
+    public void execute() throws MojoExecutionException {
+        validateSourceDirectory(sourceFiles);
+        File baseDir = getDirectory(sourceFiles.getDirectory());
+        outputDirectory();
 
         try {
-            if (!this.outputInSourceDirectory) {
-                this.option.setOutputDir(this.outputDirectory);
-            }
-            if (this.charset != null) {
-                this.option.setCharset(this.charset);
-            }
-            if (this.config != null) {
-                this.option.initConfig(this.config);
-            }
-            if (this.graphvizDot != null) {
-                OptionFlags.getInstance().setDotExecutable(this.graphvizDot);
-            }
-            if (this.format != null) {
-                option.setFileFormat(this.format);
-            }
-            if (this.verbose) {
-                OptionFlags.getInstance().setVerbose(true);
-            }
-
-            final List<File> files = FileUtils.getFiles(
-                    baseDir,
-                    getCommaSeparatedList(this.sourceFiles.getIncludes()),
-                    getCommaSeparatedList(this.sourceFiles.getExcludes())
-            );
-            for (final File file : files) {
-                File outDir;
-                if (this.outputInSourceDirectory) {
-                    outDir = file.getParentFile();
-                } else {
-                    outDir = outputDirectory.toPath().resolve(
-                            baseDir.toPath().relativize(file.toPath().getParent())).toFile();
-                }
-                this.option.setOutputDir(outDir);
-
-                FileFormatOption fileFormatOption = getFileFormatOption();
-                if (!overwrite) {
-                    String newName = fileFormatOption.getFileFormat().changeName(file.getName(), 0);
-                    File targetFile = new File(outDir, newName);
-                    if (targetFile.exists() && targetFile.lastModified() > file.lastModified()) {
-                        getLog().debug("Skip file <" + file + "> because target <" + targetFile + "> is newer");
-                        continue;
-                    }
-                }
-
-                getLog().info("Processing file <" + file + ">");
-                final SourceFileReader sourceFileReader =
-                        new SourceFileReader(
-                                new Defines(), file, this.option.getOutputDir(),
-                                this.option.getConfig(), this.option.getCharset(),
-                                fileFormatOption);
-                for (final GeneratedImage image : sourceFileReader.getGeneratedImages()) {
-                    getLog().debug(image + " " + image.getDescription());
-                }
-            }
+            populateOption();
+            generateImagesFromPlantUmlFiles(baseDir, getPlantUMLFiles(baseDir));
         } catch (Exception e) {
             throw new MojoExecutionException("Exception during plantuml process", e);
         }
     }
 
-    protected String getCommaSeparatedList(final List<String> list) {
-        final StringBuilder builder = new StringBuilder();
-        final Iterator<String> it = list.iterator();
-        while (it.hasNext()) {
-            final Object object = it.next();
-            builder.append(object.toString());
-            if (it.hasNext()) {
-                builder.append(",");
+    private void generateImagesFromPlantUmlFiles(File baseDir, List<File> files) throws IOException {
+        for (final File file : files) {
+            File outDir = getOutputDirectory(baseDir, file);
+            this.option.setOutputDir(outDir);
+
+            FileFormatOption fileFormatOption = getFileFormatOption();
+            if (!overwrite) {
+                String newName = fileFormatOption.getFileFormat().changeName(file.getName(), 0);
+                File targetFile = new File(outDir, newName);
+                if (isTargetNewer(file, targetFile)) {
+                    getLog().debug("Skip file <" + file + "> because target <" + targetFile + "> is newer");
+                    continue;
+                }
+            }
+
+            getLog().info("Processing file <" + file + ">");
+            generateImages(file, fileFormatOption);
+        }
+    }
+
+    private void generateImages(File file, FileFormatOption fileFormatOption) throws IOException {
+        final SourceFileReader sourceFileReader =
+                new SourceFileReader(
+                        new Defines(), file, option.getOutputDir(),
+                        option.getConfig(), option.getCharset(),
+                        fileFormatOption);
+        for (final GeneratedImage image : sourceFileReader.getGeneratedImages()) {
+            getLog().debug(image + " " + image.getDescription());
+        }
+    }
+
+    private boolean isTargetNewer(File file, File targetFile) {
+        return targetFile.exists() && targetFile.lastModified() > file.lastModified();
+    }
+
+    private File getOutputDirectory(File baseDir, File plantUMLFile) {
+        if (outputInSourceDirectory) {
+            return plantUMLFile.getParentFile();
+        } else {
+            return outputDirectory.toPath().resolve(
+                    baseDir.toPath().relativize(plantUMLFile.toPath().getParent())).toFile();
+        }
+    }
+
+    private List<File> getPlantUMLFiles(File baseDir) throws IOException {
+        return FileUtils.getFiles(
+                baseDir,
+                String.join(",", sourceFiles.getIncludes()),
+                String.join(",", sourceFiles.getExcludes())
+        );
+    }
+
+    private void outputDirectory() {
+        if (!this.outputInSourceDirectory) {
+            getOrCreateDirectory();
+            if (!outputDirectory.isDirectory()) {
+                throw new IllegalArgumentException("<" + outputDirectory + "> is not a valid directory.");
             }
         }
-        return builder.toString();
+    }
+
+    private void getOrCreateDirectory() {
+        if (outputDirectory.exists()) {
+            getLog().info(outputDirectory.getName() + " will be used.");
+        } else {
+            if (outputDirectory.mkdirs()) {
+                getLog().info("Created: " + outputDirectory.getName());
+            } else {
+                throw new DirectoryCanNotBeCreatedException("Can't create directories: " + outputDirectory.getName());
+            }
+        }
     }
 
     private FileFormatOption getFileFormatOption() {
-        FileFormatOption formatOptions = new FileFormatOption(this.option.getFileFormat(), this.withMetadata);
+        FileFormatOption formatOptions = new FileFormatOption(option.getFileFormat(), withMetadata);
         if (formatOptions.isWithMetadata() != withMetadata) {
             // Workarround to error in plantUML where the withMetadata flag is not correctly applied.
-            return new FileFormatOption(this.option.getFileFormat());
+            return new FileFormatOption(option.getFileFormat());
         }
         return formatOptions;
     }
-
 }

@@ -10,7 +10,7 @@ import java.io.File;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class PlantUMLMojoTest {
+public class PlantUMLMojoIntegrationTest {
 
     @Rule
     public MojoRule rule = new MojoRule() {

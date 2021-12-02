@@ -30,6 +30,7 @@
                             <include>src/main/plantuml/**/*.puml</include>
                         </includes>
                     </sourceFiles>
+                    <outputDirectory>${basedir}/target/plantuml</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

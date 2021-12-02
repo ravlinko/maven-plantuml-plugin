@@ -16,6 +16,11 @@
         <id>github</id>
         <url>scm:git:git@github.com:ravlinko/plantuml-maven-plugin.git</url>
         </site>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/octocat/hello-world</url>
+        </repository>
     </distributionManagement>
 
     <properties>
@@ -154,7 +159,7 @@
                             <include>src/main/plantuml/**/*.puml</include>
                         </includes>
                     </sourceFiles>
-                    <outputDirectory>${basedir}/plantuml</outputDirectory>
+                    <outputDirectory>${basedir}/target/plantuml</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -164,6 +169,13 @@
                 <configuration>
                     <parallel>both</parallel>
                     <threadCount>4</threadCount>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <locales>en,uk,ru</locales>
                 </configuration>
             </plugin>
             <plugin>
