@@ -36,7 +36,7 @@
         <dependency-check-maven.version>6.5.0</dependency-check-maven.version>
         <cvss.fail.level>7</cvss.fail.level>
         <cvss.suppressionFile>.owasp-cve-suppression.xml</cvss.suppressionFile>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <guava.version>31.0.1-android</guava.version>
     </properties>
 
