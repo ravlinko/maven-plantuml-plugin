@@ -1,4 +1,4 @@
-package com.github.ravlinko.plantuml.mvn;
+package com.github.ravlinko.plantuml.mvn.exceptions;
 
 public class IsNotValidPathException extends RuntimeException {
     private final String path;

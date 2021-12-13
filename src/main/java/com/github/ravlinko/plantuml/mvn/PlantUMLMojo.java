@@ -1,5 +1,7 @@
 package com.github.ravlinko.plantuml.mvn;
 
+import com.github.ravlinko.plantuml.mvn.exceptions.DirectoryCanNotBeCreatedException;
+import com.github.ravlinko.plantuml.mvn.exceptions.IsNotValidPathException;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.GeneratedImage;
@@ -16,7 +18,6 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
