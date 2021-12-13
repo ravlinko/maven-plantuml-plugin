@@ -31,6 +31,11 @@ Apache Maven PlantUML plugin to convert diagrams as a code to images.
 ./mvnw versions:display-dependency-updates
 ```
 
+### Dependency vulnerability scan
+```shell
+./mvnw -B -ntp dependency-check:check
+```
+
 ### Publish site
 
 ```shell

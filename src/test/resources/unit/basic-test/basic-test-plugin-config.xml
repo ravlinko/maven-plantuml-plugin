@@ -24,6 +24,13 @@
                 <artifactId>plantuml-maven-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <configuration>
+                    <sourceFiles>
+                        <directory>${basedir}</directory>
+                        <includes>
+                            <include>src/main/plantuml/**/*.puml</include>
+                        </includes>
+                    </sourceFiles>
+                    <outputDirectory>${basedir}/target/plantuml</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
