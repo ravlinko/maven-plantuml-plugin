@@ -33,6 +33,11 @@
         <slf4j.version>1.7.32</slf4j.version>
         <plantuml.version>8059</plantuml.version>
         <cucumber.version>7.1.0</cucumber.version>
+        <dependency-check-maven.version>6.5.0</dependency-check-maven.version>
+        <cvss.fail.level>7</cvss.fail.level>
+        <cvss.suppressionFile>.owasp-cve-suppression.xml</cvss.suppressionFile>
+        <commons-io.version>2.6</commons-io.version>
+        <guava.version>31.0.1-android</guava.version>
     </properties>
 
     <dependencies>
@@ -72,6 +77,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
 
         <dependency>
@@ -184,6 +199,37 @@
                 <version>3.1.0</version>
                 <configuration>
                 <scmBranch>gh-pages</scmBranch>
+                </configuration>
+            </plugin>
+            <!-- Security check -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-maven.version}</version>
+                <configuration>
+                    <failBuildOnCVSS>${cvss.fail.level}</failBuildOnCVSS>
+                    <suppressionFile>${cvss.suppressionFile}</suppressionFile>
+                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                    <centralAnalyzerEnabled>false</centralAnalyzerEnabled>
+                    <nexusAnalyzerEnabled>false</nexusAnalyzerEnabled>
+                    <artifactoryAnalyzerEnabled>false</artifactoryAnalyzerEnabled>
+                    <pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
+                    <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
+                    <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
+                    <opensslAnalyzerEnabled>false</opensslAnalyzerEnabled>
+                    <cmakeAnalyzerEnabled>false</cmakeAnalyzerEnabled>
+                    <autoconfAnalyzerEnabled>false</autoconfAnalyzerEnabled>
+                    <composerAnalyzerEnabled>false</composerAnalyzerEnabled>
+                    <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+                    <nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+                    <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
+                    <nuspecAnalyzerEnabled>false</nuspecAnalyzerEnabled>
+                    <nugetconfAnalyzerEnabled>false</nugetconfAnalyzerEnabled>
+                    <cocoapodsAnalyzerEnabled>false</cocoapodsAnalyzerEnabled>
+                    <bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled>
+                    <swiftPackageManagerAnalyzerEnabled>false</swiftPackageManagerAnalyzerEnabled>
+                    <golangDepEnabled>false</golangDepEnabled>
+                    <golangModEnabled>false</golangModEnabled>
                 </configuration>
             </plugin>
         </plugins>
