@@ -1,12 +1,15 @@
 package com.github.ravlinko.plantuml.mvn;
 
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import org.junit.runner.RunWith;
+import org.junit.platform.suite.api.ConfigurationParameter;
+import org.junit.platform.suite.api.IncludeEngines;
+import org.junit.platform.suite.api.SelectClasspathResource;
+import org.junit.platform.suite.api.Suite;
 
-import static io.cucumber.junit.CucumberOptions.SnippetType.CAMELCASE;
+import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
 
-@RunWith(Cucumber.class)
-@CucumberOptions(plugin = {"pretty", "summary"}, tags = "(not @wip) and (not @manual)", snippets = CAMELCASE)
-public class RunCucumberTest {
+@Suite
+@IncludeEngines("cucumber")
+@SelectClasspathResource("com/github/ravlinko/plantuml")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.github.ravlinko.plantuml")
+class RunCucumberTest {
 }

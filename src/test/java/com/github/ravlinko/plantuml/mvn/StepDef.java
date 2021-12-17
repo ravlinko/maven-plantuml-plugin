@@ -1,39 +1,20 @@
 package com.github.ravlinko.plantuml.mvn;
 
-import io.cucumber.java8.En;
-import org.apache.maven.plugin.testing.MojoRule;
-import org.junit.Rule;
+import com.github.ravlinko.plantuml.mvn.test.MojoTestCaseWrapper;
+import io.cucumber.java.en.Given;
+import org.apache.maven.plugin.MojoExecutionException;
 
-import java.io.File;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+public final class StepDef extends MojoTestCaseWrapper {
+    PlantUMLMojo plantUMLMojo;
 
-public class StepDef implements En  {
-
-    @Rule
-    public MojoRule rule = new MojoRule()
-    {
-        @Override
-        protected void before() throws Throwable
-        {
+    @Given("hello")
+    public void hello() throws MojoExecutionException {
+        try {
+            plantUMLMojo = (PlantUMLMojo) lookupTestMojo("src/test/resources/unit/basic-test/basic-test-plugin-config.xml", "build");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        @Override
-        protected void after()
-        {
-        }
-    };
-
-    public StepDef() {
-        Given("hello", () -> {
-            File pom = new File( "src/test/resources/unit/basic-test/basic-test-plugin-config.xml" );
-            assertNotNull( pom );
-            assertTrue( pom.exists() );
-
-            PlantUMLMojo myMojo = (PlantUMLMojo) rule.lookupMojo( "build", pom );
-            assertNotNull( myMojo );
-            myMojo.execute();
-        });
+        plantUMLMojo.execute();
     }
 }
