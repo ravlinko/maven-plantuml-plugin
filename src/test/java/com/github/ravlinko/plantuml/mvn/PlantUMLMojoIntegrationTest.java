@@ -1,38 +1,22 @@
 package com.github.ravlinko.plantuml.mvn;
 
 
-import org.apache.maven.plugin.testing.MojoRule;
-import org.junit.Rule;
-import org.junit.Test;
+import com.github.ravlinko.plantuml.mvn.test.extensions.MojoExtension;
+import com.github.ravlinko.plantuml.mvn.test.extensions.TestMojo;
+import org.apache.maven.plugin.Mojo;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-public class PlantUMLMojoIntegrationTest {
-
-    @Rule
-    public MojoRule rule = new MojoRule() {
-        @Override
-        protected void before() throws Throwable {
-        }
-
-        @Override
-        protected void after() {
-        }
-    };
-
+@ExtendWith(MojoExtension.class)
+class PlantUMLMojoIntegrationTest {
+    @TestMojo(pom = "src/test/resources/unit/basic-test/basic-test-plugin-config.xml")
+    Mojo mojo;
 
     @Test
-    public void testMojoGoal() throws Exception {
-        File pom = new File( "src/test/resources/unit/basic-test/basic-test-plugin-config.xml" );
-        assertNotNull( pom );
-        assertTrue( pom.exists() );
-
-        PlantUMLMojo myMojo = (PlantUMLMojo) rule.lookupMojo( "build", pom );
-        assertNotNull( myMojo );
-        myMojo.execute();
-
+    void testMojoGoal() throws Exception {
+        assertNotNull(mojo);
+        mojo.execute();
     }
 }

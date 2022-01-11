@@ -15,13 +15,13 @@ Feature: Build PlantUML sources to images
             """
 
     Rule: Conventions over configuration
-        
+
         Background:
             Given plugin without configuration
             When the "build" goal is run
 
         Example: file location conventions
-            Then a "png" image is generated 
+            Then a "png" image is generated
 
         Example: image name convention
             Then a name of the image is "sequence-diagram.png"
@@ -29,8 +29,8 @@ Feature: Build PlantUML sources to images
         Example: image location convention
             Then the image is in the "src/main/plantuml/sequences" folder
 
-    Rule: Ajustable plugin
-        
+    Rule: Adjustable plugin
+
         Scenario Outline: configure output image format
             Given "outputFormat" configuration <outputFormat>
             When the "build" goal is run
