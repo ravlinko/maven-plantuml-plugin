@@ -41,7 +41,7 @@
         <slf4j.version>1.7.32</slf4j.version>
         <plantuml.version>8059</plantuml.version>
         <junit-platform.version>1.8.2</junit-platform.version>
-        <cucumber.version>7.1.0</cucumber.version>
+        <cucumber.version>7.2.3</cucumber.version>
         <dependency-check-maven.version>6.5.0</dependency-check-maven.version>
         <cvss.fail.level>7</cvss.fail.level>
         <cvss.suppressionFile>.owasp-cve-suppression.xml</cvss.suppressionFile>
