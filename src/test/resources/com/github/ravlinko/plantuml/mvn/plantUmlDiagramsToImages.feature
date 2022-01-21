@@ -2,8 +2,7 @@
 Feature: Build PlantUML sources to images
 
     Background:
-        Given the "sequence-diagram.puml" file in the "src/main/plantuml/sequences/" folder
-        And the file contains code
+        Given the "sequence-diagram.puml" file in the "src/main/plantuml/sequences/" folder with the file contains code
             """
             @startuml
             Alice -> Bob: Authentication Request
@@ -22,13 +21,11 @@ Feature: Build PlantUML sources to images
 
         Example: file location conventions
             Then a "png" image is generated
-
         Example: image name convention
             Then a name of the image is "sequence-diagram.png"
 
         Example: image location convention
             Then the image is in the "src/main/plantuml/sequences" folder
-
     Rule: Adjustable plugin
 
         Scenario Outline: configure output image format
