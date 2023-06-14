@@ -46,7 +46,7 @@
         <cvss.fail.level>7</cvss.fail.level>
         <cvss.suppressionFile>.owasp-cve-suppression.xml</cvss.suppressionFile>
         <commons-io.version>2.11.0</commons-io.version>
-        <guava.version>31.0.1-android</guava.version>
+        <guava.version>32.0.0-android</guava.version>
         <maven-plugin-plugin.version>3.6.2</maven-plugin-plugin.version>
     </properties>
 
